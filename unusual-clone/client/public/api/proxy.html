@@ -12,33 +12,43 @@
       
       // Handle API proxy requests
       if (event.data.type === 'proxy-request') {
-        const { payload, userId } = event.data;
+        const { payload, userId, requestId } = event.data;
         
         // Create a fetch request to Supabase
         fetch('https://gckvjovozupvteqivjiv.supabase.co/functions/v1/get_content', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdja3Zqb3ZvenVwdnRlcWl2aml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MzEyODcsImV4cCI6MjA1ODQwNzI4N30.jKqHs21xpUtAcooiAOL-e04fkYEGVqEdpdSfB7PLnrs'
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdja3Zqb3ZvenVwdnRlcWl2aml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MzEyODcsImV4cCI6MjA1ODQwNzI4N30.jKqHs21xpUtAcooiAOL-e04fkYEGVqEdpdSfB7PLnrs',
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdja3Zqb3ZvenVwdnRlcWl2aml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MzEyODcsImV4cCI6MjA1ODQwNzI4N30.jKqHs21xpUtAcooiAOL-e04fkYEGVqEdpdSfB7PLnrs'
           },
           body: JSON.stringify({
             user_id: userId,
             ...payload
-          })
+          }),
+          credentials: 'include'
         })
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
         .then(data => {
           // Send the response back to the parent window
           event.source.postMessage({
             type: 'proxy-response',
+            requestId: requestId,
             data: data,
             success: true
           }, '*');
         })
         .catch(error => {
+          console.error('Proxy error:', error);
           // Send error back to parent window
           event.source.postMessage({
             type: 'proxy-response',
+            requestId: requestId,
             error: error.message,
             success: false
           }, '*');

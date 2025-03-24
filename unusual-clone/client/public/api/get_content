@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Redirecting...</title>
+  <meta http-equiv="refresh" content="0;url=https://gckvjovozupvteqivjiv.supabase.co/functions/v1/get_content">
+  <script>
+    // If query parameters exist, extract and forward them as post data
+    window.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const userId = urlParams.get('user_id');
+      const url = urlParams.get('url');
+      const referrer = urlParams.get('referrer');
+      
+      if (userId && url) {
+        const payload = {
+          user_id: userId,
+          url: url,
+          referrer: referrer || null
+        };
+        
+        fetch('https://gckvjovozupvteqivjiv.supabase.co/functions/v1/get_content', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdja3Zqb3ZvenVwdnRlcWl2aml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MzEyODcsImV4cCI6MjA1ODQwNzI4N30.jKqHs21xpUtAcooiAOL-e04fkYEGVqEdpdSfB7PLnrs',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdja3Zqb3ZvenVwdnRlcWl2aml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MzEyODcsImV4cCI6MjA1ODQwNzI4N30.jKqHs21xpUtAcooiAOL-e04fkYEGVqEdpdSfB7PLnrs'
+          },
+          body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('content').style.display = 'block';
+        })
+        .catch(error => {
+          document.getElementById('error').textContent = error.message;
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('error-container').style.display = 'block';
+        });
+      }
+    });
+  </script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    #content, #error-container {
+      display: none;
+    }
+    .error {
+      color: #e53e3e;
+    }
+  </style>
+</head>
+<body>
+  <h1>Content API</h1>
+  
+  <div id="loading">
+    <p>Redirecting to Supabase Edge Function...</p>
+  </div>
+  
+  <div id="error-container">
+    <h2 class="error">Error</h2>
+    <p id="error" class="error"></p>
+  </div>
+  
+  <div id="content">
+    <h2>Response:</h2>
+    <pre id="result"></pre>
+  </div>
+</body>
+</html> 

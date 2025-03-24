@@ -2,13 +2,16 @@
  * Unusual Clone - Client-side personalization script
  * This script fetches personalized content based on referrer and URL parameters
  * and applies it to the target website.
- * Version 1.3.0
+ * Version 1.3.2
  */
 (function() {
   let proxyFrame = null;
   let pendingProxyRequests = {};
   let proxyReady = false;
   let requestCounter = 0;
+
+  // The Supabase anon key - always include this with requests
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdja3Zqb3ZvenVwdnRlcWl2aml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MzEyODcsImV4cCI6MjA1ODQwNzI4N30.jKqHs21xpUtAcooiAOL-e04fkYEGVqEdpdSfB7PLnrs';
 
   // Initialize proxy iframe if needed
   const initProxyIfNeeded = function(apiUrl) {
@@ -98,9 +101,62 @@
     });
   };
 
+  // Open direct.html as a last resort
+  const openDirectPage = function(apiUrl, userId, url) {
+    const directUrl = `${apiUrl}/api/direct.html?user_id=${encodeURIComponent(userId)}&url=${encodeURIComponent(url)}`;
+    console.log('Unusual: Opening direct page as fallback:', directUrl);
+    
+    // Create a modal to inform the user
+    const modalContainer = document.createElement('div');
+    modalContainer.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999999;
+    `;
+    
+    const modalContent = document.createElement('div');
+    modalContent.style.cssText = `
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      max-width: 500px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    `;
+    
+    modalContent.innerHTML = `
+      <h3 style="margin-top: 0;">Content Personalization Issue</h3>
+      <p>We're having trouble loading personalized content on this page due to browser security restrictions. Would you like to:</p>
+      <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+        <button id="unusual-open-direct" style="background-color: #4299e1; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Open Content Directly</button>
+        <button id="unusual-close-modal" style="background-color: #e2e8f0; color: #4a5568; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Cancel</button>
+      </div>
+    `;
+    
+    modalContainer.appendChild(modalContent);
+    document.body.appendChild(modalContainer);
+    
+    // Add event listeners
+    document.getElementById('unusual-open-direct').addEventListener('click', function() {
+      window.open(directUrl, '_blank');
+      document.body.removeChild(modalContainer);
+    });
+    
+    document.getElementById('unusual-close-modal').addEventListener('click', function() {
+      document.body.removeChild(modalContainer);
+    });
+  };
+
   // Main function to fetch and apply content
   const fetchAndApplyContent = function(apiUrl, userId, referrer, url) {
-    // Use a more reliable approach - prefer edge function but with better retry logic
+    // First try direct fetch with credentials
     fetchFromEdgeFunction(apiUrl, userId, referrer, url)
       .then(function(result) {
         if (result && result.replacements) {
@@ -112,20 +168,78 @@
       })
       .catch(function(error) {
         console.error('Unusual: Error applying content:', error);
-        console.log('Unusual: Trying proxy method...');
+        console.log('Unusual: Trying direct Supabase method...');
         
-        return fetchViaProxy(apiUrl, userId, referrer, url)
+        return fetchFromSupabaseDirect(userId, referrer, url)
           .then(function(result) {
             if (result && result.replacements) {
               applyReplacements(result.replacements);
-              console.log('Unusual: Successfully applied content via proxy');
+              console.log('Unusual: Successfully applied content via direct Supabase call');
             } else {
-              throw new Error('No valid replacements found via proxy');
+              // If direct method fails, try proxy method as last resort
+              console.log('Unusual: Trying proxy method...');
+              return fetchViaProxy(apiUrl, userId, referrer, url)
+                .then(function(result) {
+                  if (result && result.replacements) {
+                    applyReplacements(result.replacements);
+                    console.log('Unusual: Successfully applied content via proxy');
+                  } else {
+                    throw new Error('No valid replacements found via proxy');
+                  }
+                });
             }
           });
       })
       .catch(function(error) {
         console.error('Unusual: All content fetch methods failed with error:', error);
+        // As an absolute last resort, offer to open the direct.html page
+        openDirectPage(apiUrl, userId, url);
+      });
+  };
+
+  // Direct call to Supabase Edge Function
+  const fetchFromSupabaseDirect = function(userId, referrer, url, retryCount = 0) {
+    const MAX_RETRIES = 1;
+    const payload = {
+      user_id: userId,
+      referrer: referrer || null,
+      url: url
+    };
+    
+    console.log('Unusual: Fetching directly from Supabase with payload:', JSON.stringify(payload));
+    
+    // Fetch options
+    const fetchOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'x-client-info': 'unusual-client/1.3.2'
+      },
+      body: JSON.stringify(payload),
+      mode: 'cors',
+      credentials: 'include'
+    };
+    
+    return fetch('https://gckvjovozupvteqivjiv.supabase.co/functions/v1/get_content', fetchOptions)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}`);
+        }
+        return response.json();
+      })
+      .catch(error => {
+        console.error(`Unusual: Direct Supabase error (attempt ${retryCount + 1}/${MAX_RETRIES + 1}):`, error);
+        
+        // If we haven't exceeded max retries, try again
+        if (retryCount < MAX_RETRIES) {
+          console.log(`Unusual: Retrying direct Supabase (${retryCount + 1}/${MAX_RETRIES})...`);
+          return new Promise(resolve => setTimeout(resolve, 500 * (retryCount + 1)))
+            .then(() => fetchFromSupabaseDirect(userId, referrer, url, retryCount + 1));
+        }
+        
+        throw error;
       });
   };
 
@@ -180,9 +294,13 @@
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-client-info': 'unusual-client/1.3.0'
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'x-client-info': 'unusual-client/1.3.2'
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
+      mode: 'cors',
+      credentials: 'include'
     };
     
     return fetch(endpointUrl, fetchOptions)
