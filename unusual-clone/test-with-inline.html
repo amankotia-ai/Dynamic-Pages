@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unusual Test Page (Inline Script)</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .hero {
+            background-color: #f5f5f5;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        #hero-title {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .hero-description {
+            font-size: 18px;
+            color: #666;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #3b82f6;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        .footer-text {
+            margin-top: 40px;
+            color: #666;
+            font-size: 14px;
+        }
+        .debug-panel {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-top: 30px;
+            border-radius: 4px;
+        }
+        .debug-panel h3 {
+            margin-top: 0;
+        }
+        .debug-panel pre {
+            background-color: #000;
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Unusual Test Page (Inline Version)</h1>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h2 id="hero-title">Welcome to our website</h2>
+            <p class="hero-description">This is a test page to demonstrate content personalization using Unusual Clone.</p>
+            <a href="#" class="cta-button">Get Started</a>
+        </section>
+
+        <section>
+            <h2>About This Test</h2>
+            <p>This page uses the inline script version for more reliable testing. The elements that can be targeted include:</p>
+            <ul>
+                <li><code>#hero-title</code> - The main heading</li>
+                <li><code>.hero-description</code> - The description paragraph</li>
+                <li><code>.cta-button</code> - The call-to-action button</li>
+                <li><code>.footer-text</code> - The footer text</li>
+            </ul>
+        </section>
+
+        <section class="debug-panel">
+            <h3>Testing Guide</h3>
+            <ol>
+                <li>Open your browser's Developer Tools (F12 or Right-click > Inspect)</li>
+                <li>Go to the Console tab to see debug messages</li>
+                <li>Use URL parameters to test rules: <code>?source=test</code></li>
+                <li>Check browser console for any errors</li>
+            </ol>
+            <h4>Test Console Output:</h4>
+            <pre id="console-output">Waiting for script execution...</pre>
+        </section>
+    </main>
+
+    <footer>
+        <p class="footer-text">© 2025 Test Website. This is just a demo.</p>
+    </footer>
+
+    <!-- Inline script with your hardcoded user ID -->
+    <script>
+    (function() {
+      // Simplified version of the Unusual personalization script
+      console.log('Unusual script started');
+      
+      // Record console outputs
+      const originalConsoleLog = console.log;
+      const originalConsoleError = console.error;
+      let consoleOutput = '';
+      
+      console.log = function() {
+        const args = Array.from(arguments);
+        consoleOutput += '> ' + args.join(' ') + '\n';
+        document.getElementById('console-output').textContent = consoleOutput;
+        originalConsoleLog.apply(console, args);
+      };
+      
+      console.error = function() {
+        const args = Array.from(arguments);
+        consoleOutput += '! ERROR: ' + args.join(' ') + '\n';
+        document.getElementById('console-output').textContent = consoleOutput;
+        originalConsoleError.apply(console, args);
+      };
+      
+      // Your user ID - hardcoded for reliability
+      const userId = '94ea550b-0f42-4266-81a6-94888a1eb91a';
+      
+      // Get current page info
+      const referrer = document.referrer || '';
+      const currentUrl = window.location.href;
+      console.log('Unusual: URL', currentUrl);
+      console.log('Unusual: Referrer', referrer);
+      
+      // Function to apply content changes
+      function applyReplacements(replacements) {
+        if (!replacements || !Array.isArray(replacements)) {
+          console.log('Unusual: No replacements found');
+          return;
+        }
+        
+        console.log('Unusual: Applying replacements', JSON.stringify(replacements));
+        replacements.forEach(function(replacement) {
+          try {
+            const elements = document.querySelectorAll(replacement.selector);
+            console.log('Unusual: Found elements for', replacement.selector, elements.length);
+            
+            if (elements && elements.length > 0) {
+              elements.forEach(function(element) {
+                element.innerHTML = replacement.content;
+                console.log('Unusual: Updated element', replacement.selector);
+              });
+            }
+          } catch (error) {
+            console.error('Unusual: Error applying replacement for selector', replacement.selector, error);
+          }
+        });
+      }
+
+      // Wait for DOM to be fully loaded
+      function onDomReady() {
+        // Direct API call to fetch content - simplified approach
+        console.log('Unusual: Fetching content for user', userId);
+        
+        // First try the Edge Function
+        fetch('https://gckvjovozupvteqivjiv.supabase.co/functions/v1/get_content', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdja3Zqb3ZvenVwdnRlcWl2aml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MzEyODcsImV4cCI6MjA1ODQwNzI4N30.jKqHs21xpUtAcooiAOL-e04fkYEGVqEdpdSfB7PLnrs'
+          },
+          body: JSON.stringify({
+            user_id: userId,
+            referrer: referrer,
+            url: currentUrl
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            console.log('Unusual: Edge function failed, status:', response.status);
+            // If edge function fails, try the SQL function
+            return tryStoredProcedure();
+          }
+          console.log('Unusual: Edge function succeeded');
+          return response.json();
+        })
+        .then(data => {
+          console.log('Unusual: Data received:', JSON.stringify(data));
+          if (data && data.replacements) {
+            applyReplacements(data.replacements);
+          }
+        })
+        .catch(error => {
+          console.error('Unusual: Primary method failed', error);
+          tryStoredProcedure();
+        });
+      }
+      
+      // Alternative method using SQL stored procedure
+      function tryStoredProcedure() {
+        console.log('Unusual: Trying stored procedure');
+        
+        return fetch('https://gckvjovozupvteqivjiv.supabase.co/rest/v1/rpc/get_content', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdja3Zqb3ZvenVwdnRlcWl2aml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MzEyODcsImV4cCI6MjA1ODQwNzI4N30.jKqHs21xpUtAcooiAOL-e04fkYEGVqEdpdSfB7PLnrs'
+          },
+          body: JSON.stringify({
+            user_id: userId,
+            referrer: referrer,
+            url: currentUrl
+          })
+        })
+        .then(response => {
+          console.log('Unusual: Stored procedure response status:', response.status);
+          if (!response.ok) {
+            throw new Error('Stored procedure failed: ' + response.status);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Unusual: Stored procedure data:', JSON.stringify(data));
+          if (data && data.replacements) {
+            applyReplacements(data.replacements);
+          }
+        })
+        .catch(error => {
+          console.error('Unusual: All methods failed', error);
+        });
+      }
+
+      // Initialize based on DOM readiness
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', onDomReady);
+      } else {
+        onDomReady();
+      }
+    })();
+    </script>
+</body>
+</html> 

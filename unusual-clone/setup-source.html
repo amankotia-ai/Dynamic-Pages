@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unusual Clone - Setup Test Source</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #2563eb;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .success {
+            color: #059669;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc2626;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Unusual Clone - Setup Test Source</h1>
+    
+    <div class="card">
+        <h2>Your User Information</h2>
+        <p>User ID: <strong>94ea550b-0f42-4266-81a6-94888a1eb91a</strong></p>
+    </div>
+    
+    <div class="card">
+        <h2>Actions</h2>
+        <button id="checkSourcesBtn">Check Existing Sources</button>
+        <button id="createTestSourceBtn">Create Test Source</button>
+    </div>
+    
+    <div class="card">
+        <h2>Result</h2>
+        <div id="resultPanel">Click a button above to perform an action.</div>
+    </div>
+    
+    <script>
+        // Constants
+        const USER_ID = '94ea550b-0f42-4266-81a6-94888a1eb91a';
+        const API_URL = 'https://gckvjovozupvteqivjiv.supabase.co';
+        const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdja3Zqb3ZvenVwdnRlcWl2aml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MzEyODcsImV4cCI6MjA1ODQwNzI4N30.jKqHs21xpUtAcooiAOL-e04fkYEGVqEdpdSfB7PLnrs';
+        
+        // Elements
+        const resultPanel = document.getElementById('resultPanel');
+        const checkSourcesBtn = document.getElementById('checkSourcesBtn');
+        const createTestSourceBtn = document.getElementById('createTestSourceBtn');
+        
+        // Fetch existing sources
+        checkSourcesBtn.addEventListener('click', async () => {
+            resultPanel.innerHTML = 'Checking sources...';
+            
+            try {
+                const response = await fetch(`${API_URL}/rest/v1/sources?user_id=eq.${USER_ID}&select=*,replacements(*)`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': API_KEY,
+                        'Authorization': `Bearer ${API_KEY}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Error fetching sources: ${response.status}`);
+                }
+                
+                const sources = await response.json();
+                
+                if (sources && sources.length > 0) {
+                    let html = `<p class="success">Found ${sources.length} source(s):</p>`;
+                    html += '<pre>' + JSON.stringify(sources, null, 2) + '</pre>';
+                    resultPanel.innerHTML = html;
+                } else {
+                    resultPanel.innerHTML = '<p class="error">No sources found. Click "Create Test Source" to create one.</p>';
+                }
+            } catch (error) {
+                resultPanel.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        });
+        
+        // Create a test source
+        createTestSourceBtn.addEventListener('click', async () => {
+            resultPanel.innerHTML = 'Creating test source...';
+            
+            try {
+                // First create the source
+                const sourceResponse = await fetch(`${API_URL}/rest/v1/sources`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': API_KEY,
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify({
+                        user_id: USER_ID,
+                        name: 'Test Source',
+                        rule_type: 'url_param_equals',
+                        rule_value: 'test',
+                        param_name: 'source',
+                        param_value: 'test',
+                        priority: 10,
+                        active: true
+                    })
+                });
+                
+                if (!sourceResponse.ok) {
+                    throw new Error(`Error creating source: ${sourceResponse.status}`);
+                }
+                
+                const source = await sourceResponse.json();
+                const sourceId = source[0].id;
+                
+                // Then create the replacements
+                const replacementsResponse = await fetch(`${API_URL}/rest/v1/replacements`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': API_KEY,
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify([
+                        {
+                            source_id: sourceId,
+                            selector: '#hero-title',
+                            content: 'Personalized Welcome from Test Source'
+                        },
+                        {
+                            source_id: sourceId,
+                            selector: '.hero-description',
+                            content: 'This content was personalized based on the URL parameter source=test'
+                        },
+                        {
+                            source_id: sourceId,
+                            selector: '.cta-button',
+                            content: 'Click Me - I\'m Personalized!'
+                        }
+                    ])
+                });
+                
+                if (!replacementsResponse.ok) {
+                    throw new Error(`Error creating replacements: ${replacementsResponse.status}`);
+                }
+                
+                const replacements = await replacementsResponse.json();
+                
+                resultPanel.innerHTML = `
+                    <p class="success">Successfully created test source!</p>
+                    <p>To test it, add <code>?source=test</code> to any URL where the script is installed.</p>
+                    <p>Source details:</p>
+                    <pre>${JSON.stringify(source, null, 2)}</pre>
+                    <p>Replacements:</p>
+                    <pre>${JSON.stringify(replacements, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultPanel.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html> 

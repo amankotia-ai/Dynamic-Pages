@@ -1,0 +1,120 @@
+<!-- Copy and paste this entire block into your Webflow Custom Code section (before </body>) -->
+<script>
+(function() {
+  // Simplified version of the Unusual personalization script
+  console.log('Unusual script started');
+  
+  // Your user ID - hardcoded for reliability
+  const userId = '94ea550b-0f42-4266-81a6-94888a1eb91a';
+  
+  // Get current page info
+  const referrer = document.referrer || '';
+  const currentUrl = window.location.href;
+  console.log('Unusual: URL', currentUrl);
+  console.log('Unusual: Referrer', referrer);
+  
+  // Function to apply content changes
+  function applyReplacements(replacements) {
+    if (!replacements || !Array.isArray(replacements)) {
+      console.log('Unusual: No replacements found');
+      return;
+    }
+    
+    console.log('Unusual: Applying replacements', replacements);
+    replacements.forEach(function(replacement) {
+      try {
+        const elements = document.querySelectorAll(replacement.selector);
+        console.log('Unusual: Found elements for', replacement.selector, elements.length);
+        
+        if (elements && elements.length > 0) {
+          elements.forEach(function(element) {
+            element.innerHTML = replacement.content;
+            console.log('Unusual: Updated element', element);
+          });
+        }
+      } catch (error) {
+        console.error('Unusual: Error applying replacement for selector', replacement.selector, error);
+      }
+    });
+  }
+
+  // Wait for DOM to be fully loaded
+  function onDomReady() {
+    // Direct API call to fetch content - simplified approach
+    console.log('Unusual: Fetching content for user', userId);
+    
+    // First try the Edge Function
+    fetch('https://gckvjovozupvteqivjiv.supabase.co/functions/v1/get_content', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdja3Zqb3ZvenVwdnRlcWl2aml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MzEyODcsImV4cCI6MjA1ODQwNzI4N30.jKqHs21xpUtAcooiAOL-e04fkYEGVqEdpdSfB7PLnrs'
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        referrer: referrer,
+        url: currentUrl
+      })
+    })
+    .then(response => {
+      if (!response.ok) {
+        console.log('Unusual: Edge function failed, status:', response.status);
+        // If edge function fails, try the SQL function
+        return tryStoredProcedure();
+      }
+      console.log('Unusual: Edge function succeeded');
+      return response.json();
+    })
+    .then(data => {
+      if (data && data.replacements) {
+        applyReplacements(data.replacements);
+      }
+    })
+    .catch(error => {
+      console.error('Unusual: Primary method failed', error);
+      tryStoredProcedure();
+    });
+  }
+  
+  // Alternative method using SQL stored procedure
+  function tryStoredProcedure() {
+    console.log('Unusual: Trying stored procedure');
+    
+    return fetch('https://gckvjovozupvteqivjiv.supabase.co/rest/v1/rpc/get_content', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdja3Zqb3ZvenVwdnRlcWl2aml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MzEyODcsImV4cCI6MjA1ODQwNzI4N30.jKqHs21xpUtAcooiAOL-e04fkYEGVqEdpdSfB7PLnrs'
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        referrer: referrer,
+        url: currentUrl
+      })
+    })
+    .then(response => {
+      console.log('Unusual: Stored procedure response status:', response.status);
+      if (!response.ok) {
+        throw new Error('Stored procedure failed: ' + response.status);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Unusual: Stored procedure data:', data);
+      if (data && data.replacements) {
+        applyReplacements(data.replacements);
+      }
+    })
+    .catch(error => {
+      console.error('Unusual: All methods failed', error);
+    });
+  }
+
+  // Initialize based on DOM readiness
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', onDomReady);
+  } else {
+    onDomReady();
+  }
+})();
+</script> 

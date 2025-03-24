@@ -1,0 +1,95 @@
+<!-- STEP 1: Copy everything inside this comment block and paste it into Webflow's Settings > Custom Code > Footer Code section -->
+
+<script>
+(function() {
+  // Minimal version of the Unusual personalization script for Webflow
+  
+  // Your user ID - hardcoded for reliability
+  const userId = '94ea550b-0f42-4266-81a6-94888a1eb91a';
+  
+  // Function to apply content changes
+  function applyReplacements(replacements) {
+    if (!replacements || !Array.isArray(replacements)) return;
+    
+    replacements.forEach(function(replacement) {
+      try {
+        const elements = document.querySelectorAll(replacement.selector);
+        if (elements && elements.length > 0) {
+          elements.forEach(function(element) {
+            element.innerHTML = replacement.content;
+          });
+        }
+      } catch (error) {
+        console.error('Error applying replacement', error);
+      }
+    });
+  }
+
+  // Wait for DOM to be ready
+  function onReady() {
+    // Get current page info
+    const referrer = document.referrer || '';
+    const currentUrl = window.location.href;
+    
+    // API URL 
+    const apiUrl = 'https://gckvjovozupvteqivjiv.supabase.co';
+    
+    // Try SQL stored procedure - most reliable method for Webflow
+    fetch(`${apiUrl}/rest/v1/rpc/get_content`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdja3Zqb3ZvenVwdnRlcWl2aml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MzEyODcsImV4cCI6MjA1ODQwNzI4N30.jKqHs21xpUtAcooiAOL-e04fkYEGVqEdpdSfB7PLnrs'
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        referrer: referrer,
+        url: currentUrl
+      })
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('API error: ' + response.status);
+      return response.json();
+    })
+    .then(data => {
+      if (data && data.replacements) {
+        applyReplacements(data.replacements);
+      }
+    })
+    .catch(error => console.error('Unusual error:', error));
+  }
+
+  // Run on document ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', onReady);
+  } else {
+    onReady();
+  }
+})();
+</script>
+
+<!-- 
+STEP 2: How to use this script in Webflow:
+
+1. Add IDs to elements you want to personalize:
+   - Select an element in Webflow
+   - Go to the Settings panel (gear icon)
+   - In the "Element ID" field, enter a name like "hero-title"
+   
+2. Create a source in the Unusual Clone dashboard:
+   - Navigate to the Sources page
+   - Create a source with a rule (e.g., URL parameter rule)
+   - Use the ID you created as a selector (e.g., #hero-title)
+   - Add replacement content
+   
+3. Test your personalization:
+   - Publish your Webflow site
+   - Visit your site with the matching conditions (e.g., ?source=test)
+   - See the content change based on your rules
+   
+COMMON ISSUES:
+
+- Script doesn't work: Check browser console (right-click > Inspect > Console) for errors
+- No elements found: Make sure your selectors match exactly (e.g., #hero-title)
+- API errors: Verify that you have sources created in the dashboard
+--> 
