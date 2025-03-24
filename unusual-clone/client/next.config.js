@@ -5,7 +5,7 @@ const nextConfig = {
   // We're using custom server configuration and static files
   distDir: 'build',
   // Setting custom output directory for static files
-  output: 'standalone',
+  output: 'export',  // Use export instead of standalone for static deployments
   images: {
     unoptimized: true,
   },
