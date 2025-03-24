@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unusual Clone Test Page (Vercel)</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .test-element {
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    .header {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    .log-container {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 20px;
+      font-family: monospace;
+      font-size: 14px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Unusual Clone Test Page (Vercel)</h1>
+    <p>This page is used to test the functionality of the unusual.js script on Vercel deployment.</p>
+  </div>
+
+  <div class="test-element" id="test-element-1">
+    <h2>Test Element 1</h2>
+    <p>This content should be replaced if the selector matches a replacement in your sources.</p>
+  </div>
+
+  <div class="test-element" id="test-element-2">
+    <h2>Test Element 2</h2>
+    <p>This content should be replaced if the selector matches a replacement in your sources.</p>
+  </div>
+
+  <div class="test-element" id="hero-banner">
+    <h2>Hero Banner</h2>
+    <p>This content should be replaced if the selector matches a replacement in your sources.</p>
+  </div>
+  
+  <div class="log-container" id="log-container">
+    <h3>Console Logs</h3>
+    <div id="console-logs"></div>
+  </div>
+
+  <script>
+    // Capture console logs for display on page
+    (function() {
+      const originalConsoleLog = console.log;
+      const originalConsoleError = console.error;
+      const consoleLogsElement = document.getElementById('console-logs');
+      
+      console.log = function() {
+        const args = Array.from(arguments);
+        const message = args.map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg) : arg
+        ).join(' ');
+        
+        const logElement = document.createElement('div');
+        logElement.textContent = `[LOG] ${message}`;
+        consoleLogsElement.appendChild(logElement);
+        consoleLogsElement.scrollTop = consoleLogsElement.scrollHeight;
+        
+        originalConsoleLog.apply(console, arguments);
+      };
+      
+      console.error = function() {
+        const args = Array.from(arguments);
+        const message = args.map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg) : arg
+        ).join(' ');
+        
+        const logElement = document.createElement('div');
+        logElement.textContent = `[ERROR] ${message}`;
+        logElement.style.color = 'red';
+        consoleLogsElement.appendChild(logElement);
+        consoleLogsElement.scrollTop = consoleLogsElement.scrollHeight;
+        
+        originalConsoleError.apply(console, arguments);
+      };
+      
+      console.log('Test page loaded. Waiting for unusual.js to load...');
+    })();
+  </script>
+
+  <!-- Use the script from the public directory -->
+  <script src="/scripts/unusual.js?user_id=94ea550b-0f42-4266-81a6-94888a1eb91a"></script>
+</body>
+</html> 

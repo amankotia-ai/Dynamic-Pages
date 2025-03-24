@@ -1,38 +1,27 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "client/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
-    }
-  ],
   "routes": [
-    {
-      "src": "/static/(.*)",
-      "dest": "/client/static/$1"
-    },
-    {
-      "src": "/favicon.ico",
-      "dest": "/client/favicon.ico"
-    },
-    {
-      "src": "/manifest.json",
-      "dest": "/client/manifest.json"
-    },
-    {
-      "src": "/asset-manifest.json",
-      "dest": "/client/asset-manifest.json"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/client/index.html"
-    }
+    { "src": "/unusual-clone/scripts/unusual.js", "dest": "/scripts/unusual.js" },
+    { "src": "/scripts/unusual.js", "dest": "/scripts/unusual.js" }
   ],
-  "env": {
-    "REACT_APP_SUPABASE_URL": "https://gckvjovozupvteqivjiv.supabase.co",
-    "REACT_APP_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdja3Zqb3ZvenVwdnRlcWl2aml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MzEyODcsImV4cCI6MjA1ODQwNzI4N30.jKqHs21xpUtAcooiAOL-e04fkYEGVqEdpdSfB7PLnrs"
-  }
+  "public": true,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization, x-client-info" }
+      ]
+    },
+    {
+      "source": "/scripts/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
+    }
+  ]
 } 
