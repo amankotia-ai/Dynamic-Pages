@@ -2,7 +2,7 @@
  * Unusual Clone - Client-side personalization script
  * This script fetches personalized content based on referrer and URL parameters
  * and applies it to the target website.
- * Version 1.3.2
+ * Version 1.3.3
  */
 (function() {
   let proxyFrame = null;
@@ -215,7 +215,7 @@
         'Content-Type': 'application/json',
         'apikey': SUPABASE_ANON_KEY,
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'x-client-info': 'unusual-client/1.3.2'
+        'x-client-info': 'unusual-client/1.3.3'
       },
       body: JSON.stringify(payload),
       mode: 'cors',
@@ -286,7 +286,7 @@
     
     console.log('Unusual: Fetching from Edge Function with payload:', JSON.stringify(payload));
     
-    // Construct the endpoint URL
+    // Construct the endpoint URL - Use the Next.js API route
     const endpointUrl = `${apiUrl}/api/get_content`;
     
     // Fetch options
@@ -296,7 +296,7 @@
         'Content-Type': 'application/json',
         'apikey': SUPABASE_ANON_KEY,
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'x-client-info': 'unusual-client/1.3.2'
+        'x-client-info': 'unusual-client/1.3.3'
       },
       body: JSON.stringify(payload),
       mode: 'cors',

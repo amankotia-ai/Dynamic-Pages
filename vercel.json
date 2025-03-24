@@ -5,6 +5,7 @@
   "framework": null,
   "rewrites": [
     { "source": "/scripts/unusual.js", "destination": "/scripts/unusual.js" },
+    { "source": "/static/:path*", "destination": "/static/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
@@ -13,7 +14,8 @@
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "*" },
         { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization, x-client-info" }
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization, x-client-info, apikey" },
+        { "key": "Access-Control-Allow-Credentials", "value": "true" }
       ]
     },
     {
@@ -21,6 +23,15 @@
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "*" },
         { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
+    },
+    {
+      "source": "/static/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization, x-client-info, apikey" },
+        { "key": "Access-Control-Allow-Credentials", "value": "true" }
       ]
     }
   ],
