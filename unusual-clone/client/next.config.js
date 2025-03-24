@@ -4,25 +4,10 @@ const nextConfig = {
   swcMinify: true,
   // We're using custom server configuration and static files
   distDir: 'build',
+  // Use static generation to avoid document reference errors
+  output: 'export',
   // For handling client-side routes
   trailingSlash: false,
-  // Ensure all SPA routes are handled by the main index.js page
-  async rewrites() {
-    return [
-      // Handle all SPA routes
-      {
-        source: '/:path*',
-        destination: '/',
-        has: [
-          {
-            type: 'header',
-            key: 'accept',
-            value: 'text/html',
-          },
-        ],
-      },
-    ];
-  },
   // Images configuration
   images: {
     unoptimized: true,

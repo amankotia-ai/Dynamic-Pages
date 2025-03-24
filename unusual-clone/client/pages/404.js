@@ -5,9 +5,17 @@ export default function Custom404() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to the root
-    router.replace('/');
-  }, []);
+    // Only redirect on the client side
+    if (typeof window !== 'undefined') {
+      // Redirect to the root
+      router.replace('/');
+    }
+  }, []); // This only runs on the client
 
-  return null;
+  // Return minimal markup for server-side rendering
+  return (
+    <div>
+      <h1>Loading...</h1>
+    </div>
+  );
 } 

@@ -6,6 +6,7 @@ function MyApp({ Component, pageProps }) {
   const router = useRouter();
 
   useEffect(() => {
+    // This code only runs on the client side where document is available
     // Check if we're on a client-side route that should be handled by React Router
     // These routes should be caught by React Router in src/App.tsx
     const clientRoutes = [
@@ -34,7 +35,7 @@ function MyApp({ Component, pageProps }) {
       // and let React Router handle the routing
       window.history.replaceState({}, '', '/');
     }
-  }, []);
+  }, []); // This useEffect only runs on the client side
 
   return <Component {...pageProps} />;
 }
