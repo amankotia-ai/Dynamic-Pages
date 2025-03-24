@@ -4,9 +4,9 @@
   "outputDirectory": "unusual-clone/client/build",
   "installCommand": "cd unusual-clone/client && npm install",
   "framework": "nextjs",
-  "routes": [
-    { "src": "/unusual-clone/scripts/unusual.js", "dest": "/scripts/unusual.js" },
-    { "src": "/scripts/unusual.js", "dest": "/scripts/unusual.js" }
+  "rewrites": [
+    { "source": "/unusual-clone/scripts/unusual.js", "destination": "/scripts/unusual.js" },
+    { "source": "/scripts/unusual.js", "destination": "/scripts/unusual.js" }
   ],
   "headers": [
     {
