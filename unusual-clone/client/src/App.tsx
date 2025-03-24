@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 
 // Pages
@@ -17,11 +17,39 @@ import NotFound from './pages/NotFound';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Main App component - temporarily bypassing auth for testing
+// Declare global window property for TypeScript
+declare global {
+  interface Window {
+    __spaPath: string | null;
+  }
+}
+
+// Path initializer component for direct spa navigation
+const PathInitializer = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  useEffect(() => {
+    // Check if we have a SPA path saved from the _app.js script
+    if (typeof window !== 'undefined' && window.__spaPath && location.pathname === '/') {
+      // Navigate to the stored path
+      const path = window.__spaPath;
+      // Clear the stored path to prevent future redirects
+      window.__spaPath = null;
+      // Use navigate instead of history.replaceState to ensure proper routing
+      navigate(path, { replace: true });
+    }
+  }, [navigate, location]);
+  
+  return null;
+};
+
+// Main App component
 const App: React.FC = () => {
   return (
     <AuthProvider>
       <Router>
+        <PathInitializer />
         <Routes>
           {/* Public routes - accessible without authentication */}
           <Route path="/login" element={<Login />} />

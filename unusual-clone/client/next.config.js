@@ -2,13 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  // We're using custom server configuration and static files
-  distDir: 'build',
-  // Use static generation to avoid document reference errors
+  // Generate static output
   output: 'export',
-  // For handling client-side routes
-  trailingSlash: false,
-  // Images configuration
+  // Output directory
+  distDir: 'build',
+  // For static sites, we need to disable image optimization
   images: {
     unoptimized: true,
   },

@@ -1,21 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 
-// Import App dynamically with no SSR to avoid document reference issues
+// Import App with no SSR to avoid document reference errors during build
 const AppWithNoSSR = dynamic(() => import('../src/App'), {
   ssr: false,
+  loading: () => <div style={{ textAlign: 'center', marginTop: '2rem' }}>Loading...</div>
 });
 
 export default function Home() {
-  // Use client-side rendering for the main App component
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    // This runs only on the client
-    setIsClient(true);
-  }, []);
-
   return (
     <div className="app-container">
       <Head>
@@ -25,8 +18,8 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
 
-      {/* Render the App component only on the client side */}
-      {isClient && <AppWithNoSSR />}
+      {/* The App component will only render on client-side */}
+      <AppWithNoSSR />
     </div>
   );
 } 

@@ -1,43 +1,38 @@
 import '../src/index.css';
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import Script from 'next/script';
 
 function MyApp({ Component, pageProps }) {
-  const router = useRouter();
-
-  useEffect(() => {
-    // This code only runs on the client side where document is available
-    // Check if we're on a client-side route that should be handled by React Router
-    // These routes should be caught by React Router in src/App.tsx
-    const clientRoutes = [
-      '/login',
-      '/register',
-      '/dashboard',
-      '/script',
-      '/sources',
-      '/sources/new'
-    ];
-    
-    // Also match routes that start with these patterns
-    const patternRoutes = [
-      '/sources/'
-    ];
-    
-    const path = window.location.pathname;
-    
-    // If the current path is in our list of client routes OR
-    // matches a pattern, redirect to the root where React Router will handle it
-    const isClientRoute = clientRoutes.includes(path);
-    const matchesPattern = patternRoutes.some(pattern => path.startsWith(pattern));
-    
-    if (path !== '/' && (isClientRoute || matchesPattern)) {
-      // For client-side routes, we'll render the root component
-      // and let React Router handle the routing
-      window.history.replaceState({}, '', '/');
-    }
-  }, []); // This useEffect only runs on the client side
-
-  return <Component {...pageProps} />;
+  return (
+    <>
+      {/* Add a script to handle client-side SPA routing */}
+      <Script id="spa-routing" strategy="beforeInteractive">
+        {`
+          // Handle SPA routing for React Router
+          (function() {
+            // Only run on the client
+            if (typeof window === 'undefined') return;
+            
+            // Routes that should be handled by React Router
+            const spaRoutes = ['/login', '/register', '/dashboard', '/script', '/sources', '/sources/new'];
+            const spaPatterns = ['/sources/'];
+            
+            // Check if the current path matches SPA routes
+            const path = window.location.pathname;
+            const isSpaRoute = spaRoutes.includes(path);
+            const matchesPattern = spaPatterns.some(pattern => path.startsWith(pattern));
+            
+            // If this is a SPA route and not the root, use history API to manage SPA routing
+            if (path !== '/' && (isSpaRoute || matchesPattern)) {
+              // We need to preserve the original URL for React Router to read
+              // but Next.js static export only has index.html at the root
+              window.__spaPath = path;
+            }
+          })();
+        `}
+      </Script>
+      <Component {...pageProps} />
+    </>
+  );
 }
 
 export default MyApp; 

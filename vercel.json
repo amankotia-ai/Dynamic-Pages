@@ -1,10 +1,9 @@
 {
   "version": 2,
-  "buildCommand": "npm run vercel-build",
+  "buildCommand": "cd unusual-clone/client && npm install && npm run build",
   "outputDirectory": "unusual-clone/client/build",
-  "framework": "nextjs",
+  "framework": null,
   "rewrites": [
-    { "source": "/unusual-clone/scripts/unusual.js", "destination": "/scripts/unusual.js" },
     { "source": "/scripts/unusual.js", "destination": "/scripts/unusual.js" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
