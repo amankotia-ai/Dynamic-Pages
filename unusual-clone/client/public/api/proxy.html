@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>API Proxy</title>
+  <script>
+    // This script will proxy requests to Supabase Edge Functions
+    // It helps avoid CORS issues when deployed on static hosting
+    
+    // Listen for POST message events from the parent window
+    window.addEventListener('message', function(event) {
+      if (!event.data || !event.data.type) return;
+      
+      // Handle API proxy requests
+      if (event.data.type === 'proxy-request') {
+        const { payload, userId } = event.data;
+        
+        // Create a fetch request to Supabase
+        fetch('https://gckvjovozupvteqivjiv.supabase.co/functions/v1/get_content', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdja3Zqb3ZvenVwdnRlcWl2aml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MzEyODcsImV4cCI6MjA1ODQwNzI4N30.jKqHs21xpUtAcooiAOL-e04fkYEGVqEdpdSfB7PLnrs'
+          },
+          body: JSON.stringify({
+            user_id: userId,
+            ...payload
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Send the response back to the parent window
+          event.source.postMessage({
+            type: 'proxy-response',
+            data: data,
+            success: true
+          }, '*');
+        })
+        .catch(error => {
+          // Send error back to parent window
+          event.source.postMessage({
+            type: 'proxy-response',
+            error: error.message,
+            success: false
+          }, '*');
+        });
+      }
+    });
+    
+    // Notify parent window that proxy is ready
+    window.parent.postMessage({ type: 'proxy-ready' }, '*');
+  </script>
+</head>
+<body>
+  <p>API Proxy Frame - Do not close</p>
+</body>
+</html> 

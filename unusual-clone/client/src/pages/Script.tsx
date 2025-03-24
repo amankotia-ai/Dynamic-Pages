@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import AuthContext from '../contexts/AuthContext';
 
 // Script component for generating the embed code
@@ -6,9 +6,16 @@ const Script: React.FC = () => {
   const { user } = useContext(AuthContext);
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'standard' | 'webflow'>('standard');
+  const [deploymentUrl, setDeploymentUrl] = useState<string>('');
+
+  useEffect(() => {
+    // Get the current origin (the Vercel deployment URL)
+    const origin = window.location.origin;
+    setDeploymentUrl(origin);
+  }, []);
 
   // Construct the script URL with the user ID
-  const scriptUrl = `https://gckvjovozupvteqivjiv.supabase.co/storage/v1/object/public/scripts/unusual.js?user_id=${user?.id}`;
+  const scriptUrl = `${deploymentUrl}/scripts/unusual.js?user_id=${user?.id}`;
   
   // The standard embed code for websites
   const embedCode = `<script src="${scriptUrl}"></script>`;
