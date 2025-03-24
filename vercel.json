@@ -1,12 +1,13 @@
 {
   "version": 2,
+  "buildCommand": "cd unusual-clone/client && npm install && npm run build",
+  "outputDirectory": "unusual-clone/client/build",
+  "installCommand": "cd unusual-clone/client && npm install",
+  "framework": "nextjs",
   "routes": [
     { "src": "/unusual-clone/scripts/unusual.js", "dest": "/scripts/unusual.js" },
     { "src": "/scripts/unusual.js", "dest": "/scripts/unusual.js" }
   ],
-  "public": true,
-  "cleanUrls": true,
-  "trailingSlash": false,
   "headers": [
     {
       "source": "/api/(.*)",
@@ -23,5 +24,9 @@
         { "key": "Cache-Control", "value": "public, max-age=3600" }
       ]
     }
-  ]
+  ],
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://gckvjovozupvteqivjiv.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdja3Zqb3ZvenVwdnRlcWl2aml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MzEyODcsImV4cCI6MjA1ODQwNzI4N30.jKqHs21xpUtAcooiAOL-e04fkYEGVqEdpdSfB7PLnrs"
+  }
 } 

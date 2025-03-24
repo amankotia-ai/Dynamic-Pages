@@ -1,5 +1,5 @@
 {
-  "name": "client",
+  "name": "dynamic-pages",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -25,10 +25,15 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "export": "next export",
+    "react-start": "react-scripts start",
+    "react-build": "react-scripts build",
+    "react-test": "react-scripts test",
+    "react-eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
