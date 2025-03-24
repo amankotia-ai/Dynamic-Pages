@@ -4,8 +4,8 @@ const nextConfig = {
   swcMinify: true,
   // We're using custom server configuration and static files
   distDir: 'build',
-  // Setting custom output directory for static files
-  output: 'export',  // Use export instead of standalone for static deployments
+  // Removing static export to generate routes-manifest.json
+  // output: 'export',  // This was causing the routes-manifest.json to not be generated
   images: {
     unoptimized: true,
   },

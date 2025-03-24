@@ -5,7 +5,8 @@
   "framework": "nextjs",
   "rewrites": [
     { "source": "/unusual-clone/scripts/unusual.js", "destination": "/scripts/unusual.js" },
-    { "source": "/scripts/unusual.js", "destination": "/scripts/unusual.js" }
+    { "source": "/scripts/unusual.js", "destination": "/scripts/unusual.js" },
+    { "source": "/api/:path*", "destination": "/api/:path*" }
   ],
   "headers": [
     {
