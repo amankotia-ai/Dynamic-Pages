@@ -27,8 +27,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "npx serve build",
-    "lint": "next lint"
+    "start": "next start",
+    "export": "next export",
+    "lint": "next lint",
+    "analyze": "cross-env ANALYZE=true next build",
+    "prod-static": "npm run build && npm run start",
+    "vercel-build": "next build"
   },
   "eslintConfig": {
     "extends": [

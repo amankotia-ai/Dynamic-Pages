@@ -2,14 +2,16 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  // Generate static output
+  // Static export configuration
   output: 'export',
-  // Output directory
   distDir: 'build',
   // For static sites, we need to disable image optimization
   images: {
     unoptimized: true,
   },
+  // Ensure we don't try to statically generate API routes
+  // which need to be server-side rendered
+  trailingSlash: true,
   // Configure webpack to handle pure client-side dependencies
   webpack: (config, { isServer }) => {
     // Fix for using process.browser

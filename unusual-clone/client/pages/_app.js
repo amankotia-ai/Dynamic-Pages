@@ -1,33 +1,38 @@
-import '../src/index.css';
+import '../styles/globals.css';
+import Head from 'next/head';
 import Script from 'next/script';
 
 function MyApp({ Component, pageProps }) {
   return (
     <>
+      <Head>
+        <title>Content Personalization Tools</title>
+        <meta name="description" content="Tools for testing and integrating with the content personalization service" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       {/* Add a script to handle client-side SPA routing */}
       <Script id="spa-routing" strategy="beforeInteractive">
         {`
-          // Handle SPA routing for React Router
-          (function() {
-            // Only run on the client
-            if (typeof window === 'undefined') return;
-            
-            // Routes that should be handled by React Router
-            const spaRoutes = ['/login', '/register', '/dashboard', '/script', '/sources', '/sources/new'];
-            const spaPatterns = ['/sources/'];
-            
-            // Check if the current path matches SPA routes
-            const path = window.location.pathname;
-            const isSpaRoute = spaRoutes.includes(path);
-            const matchesPattern = spaPatterns.some(pattern => path.startsWith(pattern));
-            
-            // If this is a SPA route and not the root, use history API to manage SPA routing
-            if (path !== '/' && (isSpaRoute || matchesPattern)) {
-              // We need to preserve the original URL for React Router to read
-              // but Next.js static export only has index.html at the root
-              window.__spaPath = path;
+          // Handle SPA routing by listening for link clicks
+          document.addEventListener('click', function(event) {
+            // Check if the clicked element is a link
+            const link = event.target.closest('a');
+            if (link && link.href && link.href.startsWith(window.location.origin)) {
+              // Prevent default behavior
+              event.preventDefault();
+              
+              // Get the path
+              const path = link.href.replace(window.location.origin, '');
+              
+              // Handle SPA navigation
+              window.history.pushState({}, '', path);
+              
+              // Trigger a popstate event
+              const popStateEvent = new PopStateEvent('popstate', { state: {} });
+              dispatchEvent(popStateEvent);
             }
-          })();
+          });
         `}
       </Script>
       <Component {...pageProps} />
